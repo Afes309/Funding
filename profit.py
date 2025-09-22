@@ -4,7 +4,7 @@ import ccxt as ccxt_s
 from datetime import datetime,timedelta
 
 
-enter_data = {'symbol':'ALL/USDT:USDT','short_enter_price':1.021, 'long_enter_price':1.101,
+enter_data = {'symbol':'OMNI/USDT:USDT','short_enter_price':3.817, 'long_enter_price':3.785,
                           'short_exchange': 'gate', 'long_exchange':'mexc', 'short_time':155, 'long_time':455
                           }
 
@@ -25,7 +25,7 @@ def get_current_data(short_exchange, long_exchange,symbol):
         exchange_short = getattr(ccxt_s, short_exchange)({'enableRateLimit': True}) 
         exchange_long = getattr(ccxt_s, long_exchange)({'enableRateLimit': True}) 
 
-        data = []
+        data = {}
 
         short_data = exchange_short.fetch_ticker(symbol)
         long_data = exchange_long.fetch_ticker(symbol)
@@ -45,12 +45,12 @@ def get_current_data(short_exchange, long_exchange,symbol):
         '''
         
 
-        data.append({'symbol':symbol,'short_current_price':short_data['bid'],'long_current_price':long_data['ask'],
+        data.update({'symbol':symbol,'short_current_price':short_data['bid'],'long_current_price':long_data['ask'],
                      'funding_short':round(funding_short['fundingRate']*100,5),
-                     'fuding_long':round(funding_long['fundingRate']*100,5)
+                     'funding_long':round(funding_long['fundingRate']*100,5)
                      })
         
-        print(data)
+        #print(f'current data {data}')
         
         return data
     
@@ -67,13 +67,17 @@ def get_profit_data(enter_data,current_data,fee_short,fee_long):
 
     result_profit = short_profit+long_profit
 
+    print(f"Short exchange price {current_data['short_current_price']}")
+    print(f"Long excenge price {current_data['long_current_price']}")
+    print(f"Short funding {current_data['funding_short']}")
+    print(f"Long funding {current_data['funding_long']}")
+
     print(short_profit)
     print(long_profit)
 
-    print(result_profit)
+    print(f'result profit {result_profit}')
 
 
 if __name__ == '__main__':
-    current_data = get_current_data('gate','mexc','ALL/USDT:USDT')
-    print(current_data)
+    current_data = get_current_data('gate','mexc','OMNI/USDT:USDT')
     get_profit_data(enter_data,current_data,mexc,gate)
